@@ -1,0 +1,29 @@
+{
+    "name": "unicorn-back",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "serve": "nodemon index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://bitbucket.org/symbolit/unicorn-back"
+    },
+    "author": "Benjamin Barbier <benjamin.barbier@symbol-it.fr>",
+    "license": "ISC",
+    "homepage": "https://bitbucket.org/symbolit/unicorn-back",
+    "dependencies": {
+        "hapi": "^16.6.2",
+        "hapi-swagger": "7.5.0",
+        "inert": "4.1.0",
+        "joi": "10.1.0",
+        "lodash": "^4.17.4",
+        "mongodb": "2.2.22",
+        "vision": "4.1.1"
+    },
+    "devDependencies": {
+        "nodemon": "^1.12.1"
+    }
+}
