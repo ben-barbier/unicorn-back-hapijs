@@ -63,51 +63,51 @@ server.register([
         db.unicorns = [
             {
                 id: 1,
-                name: 'Bob',
-                birthyear: 2002,
-                weight: 30,
+                name: 'Baby',
+                birthyear: new Date().getFullYear(),
+                weight: 10,
                 photo: server.info.uri + '/unicorns/photos/unicorn-1.jpg',
-                hobbies: ['a', 'b', 'c']
+                hobbies: ['Sleep', 'Cry']
             },
             {
                 id: 2,
                 name: 'Dylan',
-                birthyear: 2005,
+                birthyear: new Date().getFullYear() - 1,
                 weight: 32,
                 photo: server.info.uri + '/unicorns/photos/unicorn-2.jpg',
-                hobbies: ['a']
+                hobbies: ['Coffee', 'Sing', 'Cinema']
             },
             {
                 id: 3,
-                name: 'Dylan',
-                birthyear: 2005,
-                weight: 32,
+                name: 'Charly',
+                birthyear: new Date().getFullYear() - 12,
+                weight: 45,
                 photo: server.info.uri + '/unicorns/photos/unicorn-3.png',
-                hobbies: ['a']
+                hobbies: ['Read', 'Photography']
             },
             {
                 id: 4,
-                name: 'Dylan',
-                birthyear: 2005,
-                weight: 32,
+                name: 'John',
+                birthyear: new Date().getFullYear() - 17,
+                weight: 54,
                 photo: server.info.uri + '/unicorns/photos/unicorn-4.jpg',
-                hobbies: ['a']
+                hobbies: ['Sport', 'Music']
             },
             {
                 id: 5,
-                name: 'Dylan',
-                birthyear: 2005,
-                weight: 32,
+                name: 'Freddy',
+                birthyear: new Date().getFullYear() - 49,
+                weight: 90,
                 photo: server.info.uri + '/unicorns/photos/unicorn-5.jpg',
-                hobbies: ['a']
+                hobbies: ['Cut wood', 'Hockey']
             },
             {
                 id: 6,
-                name: 'Dylan',
-                birthyear: 2005,
-                weight: 32,
+                name: 'Cindy',
+                birthyear: new Date().getFullYear() - 15,
+                weight: 46,
                 photo: server.info.uri + '/unicorns/photos/unicorn-6.jpg',
-                hobbies: ['a']
+                hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction']
             }
         ];
         console.log('Server running at:', server.info.uri);
