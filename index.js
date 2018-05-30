@@ -27,7 +27,7 @@ const unicornSchema = Joi.object({
     capacities: Joi.array().items(Joi.number()).unique()
 });
 
-const capacities = Joi.object({
+const capacitiesSchema = Joi.object({
     id: Joi.number(),
     label: Joi.string().required(),
 });
@@ -151,7 +151,24 @@ server.route([{
     config: {
         tags: ['api'],
         response: {
-            schema: Joi.array().items(capacities)
+            schema: Joi.array().items(capacitiesSchema)
+        }
+    }
+}, {
+    method: 'GET',
+    path: '/capacities/{capacityId}',
+    handler: function (request, reply) {
+        const capacity = _(db.capacities).find({id: +request.params.capacityId});
+        if (capacity) {
+            return reply(capacity);
+        } else {
+            return reply(`Capacity '${request.params.capacityId}' not found`).code(404);
+        }
+    },
+    config: {
+        tags: ['api'],
+        response: {
+            schema: capacitiesSchema
         }
     }
 }, {
