@@ -78,6 +78,10 @@ server.register([
             {
                 id: 3,
                 label: 'Sweet'
+            },
+            {
+                id: 4,
+                label: 'Telepath'
             }
         ];
         db.unicorns = [
@@ -170,6 +174,55 @@ server.route([{
         response: {
             schema: capacitiesSchema
         }
+    }
+}, {
+    method: 'POST',
+    path: '/capacities',
+    handler: function (request, reply) {
+        let newCapacity = request.payload;
+        newCapacity.id = (_(db.capacities).map('id').max() || 0) + 1;
+        db.capacities.push(newCapacity);
+        return reply(newCapacity);
+    },
+    config: {
+        tags: ['api'],
+        validate: {
+            payload: capacitiesSchema
+        }
+    }
+}, {
+    method: 'PUT',
+    path: '/capacities/{capacityId}',
+    handler: function (request, reply) {
+        const updatedCapacity = request.payload;
+        if (updatedCapacity.id !== +request.params.capacityId) {
+            return reply('Incoherent capacity ID between request param and payload').code(500);
+        }
+        if (!_(db.capacities).find({id: updatedCapacity.id})) {
+            return reply(`Capacity '${request.params.capacityId}' not found`).code(404);
+        }
+        db.capacities = _(db.capacities).filter((capacity) => capacity.id !== updatedCapacity.id).value();
+        db.capacities.push(updatedCapacity);
+        return reply(updatedCapacity);
+    },
+    config: {
+        tags: ['api'],
+        validate: {
+            payload: capacitiesSchema
+        }
+    }
+}, {
+    method: 'DELETE',
+    path: '/capacities/{capacityId}',
+    handler: function (request, reply) {
+        if (!_(db.capacities).find({id: +request.params.capacityId})) {
+            return reply(`Capacity '${request.params.capacityId}' not found`).code(404);
+        }
+        db.capacities = _(db.capacities).filter((capacity) => capacity.id !== +request.params.capacityId).value();
+        return reply();
+    },
+    config: {
+        tags: ['api']
     }
 }, {
     method: 'GET',
