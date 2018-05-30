@@ -23,7 +23,13 @@ const unicornSchema = Joi.object({
     birthyear: Joi.number().integer().min(1900).max(new Date().getFullYear()),
     weight: Joi.number(),
     photo: Joi.string().uri().allow(''),
-    hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique()
+    hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
+    capacities: Joi.array().unique()
+});
+
+const capacities = Joi.object({
+    id: Joi.number(),
+    label: Joi.string().required(),
 });
 
 const server = new Hapi.Server({
@@ -60,6 +66,20 @@ server.register([
         if (err) {
             throw err;
         }
+        db.capacities = [
+            {
+                id: 1,
+                label: 'Strong'
+            },
+            {
+                id: 2,
+                label: 'Speed'
+            },
+            {
+                id: 3,
+                label: 'Sweet'
+            }
+        ];
         db.unicorns = [
             {
                 id: 1,
@@ -67,7 +87,8 @@ server.register([
                 birthyear: new Date().getFullYear(),
                 weight: 10,
                 photo: server.info.uri + '/unicorns/photos/unicorn-1.jpg',
-                hobbies: ['Sleep', 'Cry']
+                hobbies: ['Sleep', 'Cry'],
+                capacities: [1, 2]
             },
             {
                 id: 2,
@@ -75,7 +96,9 @@ server.register([
                 birthyear: new Date().getFullYear() - 1,
                 weight: 32,
                 photo: server.info.uri + '/unicorns/photos/unicorn-2.jpg',
-                hobbies: ['Coffee', 'Sing', 'Cinema']
+                hobbies: ['Coffee', 'Sing', 'Cinema'],
+                capacities: [1]
+
             },
             {
                 id: 3,
@@ -83,7 +106,8 @@ server.register([
                 birthyear: new Date().getFullYear() - 12,
                 weight: 45,
                 photo: server.info.uri + '/unicorns/photos/unicorn-3.png',
-                hobbies: ['Read', 'Photography']
+                hobbies: ['Read', 'Photography'],
+                capacities: [2]
             },
             {
                 id: 4,
@@ -91,7 +115,8 @@ server.register([
                 birthyear: new Date().getFullYear() - 17,
                 weight: 54,
                 photo: server.info.uri + '/unicorns/photos/unicorn-4.jpg',
-                hobbies: ['Sport', 'Music']
+                hobbies: ['Sport', 'Music'],
+                capacities: []
             },
             {
                 id: 5,
@@ -99,7 +124,8 @@ server.register([
                 birthyear: new Date().getFullYear() - 49,
                 weight: 90,
                 photo: server.info.uri + '/unicorns/photos/unicorn-5.jpg',
-                hobbies: ['Cut wood', 'Hockey']
+                hobbies: ['Cut wood', 'Hockey'],
+                capacities: [3]
             },
             {
                 id: 6,
@@ -107,7 +133,8 @@ server.register([
                 birthyear: new Date().getFullYear() - 15,
                 weight: 46,
                 photo: server.info.uri + '/unicorns/photos/unicorn-6.jpg',
-                hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction']
+                hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction'],
+                capacities: [1, 2, 3]
             }
         ];
         console.log('Server running at:', server.info.uri);
@@ -116,6 +143,18 @@ server.register([
 
 // Add routes
 server.route([{
+    method: 'GET',
+    path: '/capacities',
+    handler: function (request, reply) {
+        return reply(db.capacities);
+    },
+    config: {
+        tags: ['api'],
+        response: {
+            schema: Joi.array().items(capacities)
+        }
+    }
+}, {
     method: 'GET',
     path: '/unicorns',
     handler: function (request, reply) {
