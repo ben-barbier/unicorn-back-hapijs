@@ -24,7 +24,7 @@ const unicornSchema = Joi.object({
     weight: Joi.number(),
     photo: Joi.string().uri().allow(''),
     hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
-    capacities: Joi.array().unique()
+    capacities: Joi.array().items(Joi.number()).unique()
 });
 
 const capacities = Joi.object({
