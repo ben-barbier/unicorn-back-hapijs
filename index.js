@@ -182,7 +182,7 @@ server.route([{
         let newCapacity = request.payload;
         newCapacity.id = (_(db.capacities).map('id').max() || 0) + 1;
         db.capacities.push(newCapacity);
-        return reply(newCapacity);
+        return reply(newCapacity).code(201);
     },
     config: {
         tags: ['api'],
@@ -271,7 +271,7 @@ server.route([{
         let newUnicorn = request.payload;
         newUnicorn.id = (_(db.unicorns).map('id').max() || 0) + 1;
         db.unicorns.push(newUnicorn);
-        return reply(newUnicorn);
+        return reply(newUnicorn).code(201);
     },
     config: {
         tags: ['api'],
