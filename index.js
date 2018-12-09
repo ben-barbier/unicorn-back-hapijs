@@ -46,10 +46,17 @@ const server = new Hapi.Server({
 
 server.connection({
     host: '127.0.0.1',
-    port: process.env.PORT || '3000'
+    port: process.env.PORT || '3000',
+    labels: ['api'],
 });
 
-server.register([
+server.connection({
+    host: '127.0.0.1',
+    port: process.env.PORT + 1 || '3001',
+    labels: ['count-unicorns'],
+});
+
+server.select('api').register([
     Inert,
     Vision,
     {
@@ -90,7 +97,7 @@ server.register([
                 name: 'Baby',
                 birthyear: new Date().getFullYear(),
                 weight: 10,
-                photo: server.info.uri + '/unicorns/photos/unicorn-1.jpg',
+                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-1.jpg',
                 hobbies: ['Sleep', 'Cry'],
                 capacities: [1, 2]
             },
@@ -99,7 +106,7 @@ server.register([
                 name: 'Dylan',
                 birthyear: new Date().getFullYear() - 1,
                 weight: 32,
-                photo: server.info.uri + '/unicorns/photos/unicorn-2.jpg',
+                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-2.jpg',
                 hobbies: ['Coffee', 'Sing', 'Cinema'],
                 capacities: [1]
 
@@ -109,7 +116,7 @@ server.register([
                 name: 'Charly',
                 birthyear: new Date().getFullYear() - 12,
                 weight: 45,
-                photo: server.info.uri + '/unicorns/photos/unicorn-3.png',
+                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-3.png',
                 hobbies: ['Read', 'Photography'],
                 capacities: [2]
             },
@@ -118,7 +125,7 @@ server.register([
                 name: 'John',
                 birthyear: new Date().getFullYear() - 17,
                 weight: 54,
-                photo: server.info.uri + '/unicorns/photos/unicorn-4.jpg',
+                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-4.jpg',
                 hobbies: ['Sport', 'Music'],
                 capacities: []
             },
@@ -127,7 +134,7 @@ server.register([
                 name: 'Freddy',
                 birthyear: new Date().getFullYear() - 49,
                 weight: 90,
-                photo: server.info.uri + '/unicorns/photos/unicorn-5.jpg',
+                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-5.jpg',
                 hobbies: ['Cut wood', 'Hockey'],
                 capacities: [3]
             },
@@ -136,17 +143,19 @@ server.register([
                 name: 'Cindy',
                 birthyear: new Date().getFullYear() - 15,
                 weight: 46,
-                photo: server.info.uri + '/unicorns/photos/unicorn-6.jpg',
+                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-6.jpg',
                 hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction'],
                 capacities: [1, 2, 3]
             }
         ];
-        console.log('Server running at:', server.info.uri);
+        console.log('API                 running at:', server.select('api').info.uri);
+        console.log('Socket              running at:', server.select('count-unicorns').info.uri);
+        console.log('API documentation available at:', server.select('api').info.uri + '/documentation');
     });
 });
 
 // Add routes
-server.route([{
+server.select('api').route([{
     method: 'GET',
     path: '/capacities',
     handler: function (request, reply) {
@@ -314,3 +323,29 @@ server.route([{
         tags: ['api']
     }
 }]);
+
+// Socket.io
+const io = require('socket.io')(server.select('count-unicorns').listener);
+
+// Add socket.io connection to count unicorns (like WebSocket)
+io.on('connection', (socket) => {
+
+    console.log('user connected');
+    let count = Math.floor(Math.random() * 1000);
+
+    const sendNewCountValue = setInterval(() => {
+        count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
+        console.log(count);
+        socket.emit('count', count);
+    }, 500);
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+        clearInterval(sendNewCountValue);
+    });
+
+    socket.on('ISawOne', () => {
+        count++;
+    });
+
+});
