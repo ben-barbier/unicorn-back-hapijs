@@ -21,6 +21,7 @@
         "joi": "10.1.0",
         "lodash": "^4.17.11",
         "mongodb": "2.2.22",
+        "socket.io": "^2.2.0",
         "vision": "4.1.1"
     },
     "devDependencies": {
