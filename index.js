@@ -13,8 +13,9 @@ const Pack = require('./package');
 
 // Utils
 const _ = require('lodash');
+const portfinder = require('portfinder');
 
-// Data (init)
+// Data
 const db = {};
 const capacities = require('./data/capacities');
 const unicorns = require('./data/unicorns');
@@ -31,71 +32,79 @@ const server = new Hapi.Server({
     }
 });
 
-server.connection({
-    host: '127.0.0.1',
-    port: process.env.PORT || '3000',
-    labels: ['api'],
-});
+portfinder.basePort = 3000;
+portfinder.getPortPromise().then((port) => {
+    server.connection({
+        host: '127.0.0.1',
+        port: process.env.PORT || port,
+        labels: ['api'],
+    });
 
-server.connection({
-    host: '127.0.0.1',
-    port: process.env.PORT + 1 || '3001',
-    labels: ['count-unicorns'],
-});
-
-server.select('api').register([
-    Inert,
-    Vision,
-    {
-        'register': HapiSwagger,
-        'options': {
-            info: {
-                'title': Pack.name + ' API Documentation',
-                'version': Pack.version,
+    server.select('api').register([
+        Inert,
+        Vision,
+        {
+            'register': HapiSwagger,
+            'options': {
+                info: {
+                    'title': Pack.name + ' API Documentation',
+                    'version': Pack.version,
+                }
             }
-        }
-    }], (err) => {
-    // Start the server
-    server.start((err) => {
-        if (err) {
-            throw err;
-        }
-        db.capacities = capacities.getCapacities();
-        db.unicorns = unicorns.getUnicorns(server.select('api'));
-        console.log('API                 running at:', server.select('api').info.uri);
-        console.log('Socket              running at:', server.select('count-unicorns').info.uri);
-        console.log('API documentation available at:', server.select('api').info.uri + '/documentation');
+        }], (err) => {
+        // Start the server
+        server.start((err) => {
+            if (err) {
+                throw err;
+            }
+            db.capacities = capacities.getCapacities();
+            db.unicorns = unicorns.getUnicorns(server.select('api'));
+            console.log('API                 running at:', server.select('api').info.uri);
+            console.log('Socket              running at:', server.select('count-unicorns').info.uri);
+            console.log('API documentation available at:', server.select('api').info.uri + '/documentation');
+        });
     });
+
+    // Add routes
+    server.select('api').route([
+        ...unicorns.getRoutes(db),
+        ...capacities.getRoutes(db)
+    ]);
+
 });
 
-// Add routes
-server.select('api').route([
-    ...unicorns.getRoutes(db),
-    ...capacities.getRoutes(db)
-]);
-
-// Socket.io
-const io = require('socket.io')(server.select('count-unicorns').listener);
-
-// Add socket.io connection to count unicorns (like WebSocket)
-io.on('connection', (socket) => {
-
-    console.log('user connected');
-    let count = Math.floor(Math.random() * 1000);
-
-    const sendNewCountValue = setInterval(() => {
-        count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
-        console.log(count);
-        socket.emit('count', count);
-    }, 500);
-
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-        clearInterval(sendNewCountValue);
+portfinder.basePort = 3100;
+portfinder.getPortPromise().then((port) => {
+    server.connection({
+        host: '127.0.0.1',
+        port: process.env.PORT + 1 || port,
+        labels: ['count-unicorns'],
     });
 
-    socket.on('ISawOne', () => {
-        count++;
+    // Socket.io
+    const io = require('socket.io')(server.select('count-unicorns').listener);
+
+    // Add socket.io connection to count unicorns (like WebSocket)
+    io.on('connection', (socket) => {
+
+        console.log('user connected');
+        let count = Math.floor(Math.random() * 1000);
+
+        const sendNewCountValue = setInterval(() => {
+            count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
+            console.log(count);
+            socket.emit('count', count);
+        }, 500);
+
+        socket.on('disconnect', () => {
+            console.log('user disconnected');
+            clearInterval(sendNewCountValue);
+        });
+
+        socket.on('ISawOne', () => {
+            count++;
+        });
+
     });
 
 });
