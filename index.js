@@ -16,6 +16,8 @@ const _ = require('lodash');
 
 // Data (init)
 const db = {};
+const capacities = require('./data/capacities');
+const unicorns = require('./data/unicorns');
 
 const unicornSchema = Joi.object({
     id: Joi.number(),
@@ -73,81 +75,8 @@ server.select('api').register([
         if (err) {
             throw err;
         }
-        db.capacities = [
-            {
-                id: 1,
-                label: 'Strong'
-            },
-            {
-                id: 2,
-                label: 'Speed'
-            },
-            {
-                id: 3,
-                label: 'Sweet'
-            },
-            {
-                id: 4,
-                label: 'Telepath'
-            }
-        ];
-        db.unicorns = [
-            {
-                id: 1,
-                name: 'Baby',
-                birthyear: new Date().getFullYear(),
-                weight: 10,
-                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-1.jpg',
-                hobbies: ['Sleep', 'Cry'],
-                capacities: [1, 2]
-            },
-            {
-                id: 2,
-                name: 'Dylan',
-                birthyear: new Date().getFullYear() - 1,
-                weight: 32,
-                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-2.jpg',
-                hobbies: ['Coffee', 'Sing', 'Cinema'],
-                capacities: [1]
-
-            },
-            {
-                id: 3,
-                name: 'Charly',
-                birthyear: new Date().getFullYear() - 12,
-                weight: 45,
-                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-3.png',
-                hobbies: ['Read', 'Photography'],
-                capacities: [2]
-            },
-            {
-                id: 4,
-                name: 'John',
-                birthyear: new Date().getFullYear() - 17,
-                weight: 54,
-                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-4.jpg',
-                hobbies: ['Sport', 'Music'],
-                capacities: []
-            },
-            {
-                id: 5,
-                name: 'Freddy',
-                birthyear: new Date().getFullYear() - 49,
-                weight: 90,
-                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-5.jpg',
-                hobbies: ['Cut wood', 'Hockey'],
-                capacities: [3]
-            },
-            {
-                id: 6,
-                name: 'Cindy',
-                birthyear: new Date().getFullYear() - 15,
-                weight: 46,
-                photo: server.select('api').info.uri + '/unicorns/photos/unicorn-6.jpg',
-                hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction'],
-                capacities: [1, 2, 3]
-            }
-        ];
+        db.capacities = capacities.getCapacities();
+        db.unicorns = unicorns.getUnicorns(server.select('api'));
         console.log('API                 running at:', server.select('api').info.uri);
         console.log('Socket              running at:', server.select('count-unicorns').info.uri);
         console.log('API documentation available at:', server.select('api').info.uri + '/documentation');
