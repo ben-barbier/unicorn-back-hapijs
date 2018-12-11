@@ -1,3 +1,10 @@
+const Joi = require('joi');
+
+exports.schema = Joi.object({
+    id: Joi.number(),
+    label: Joi.string().required(),
+});
+
 exports.getCapacities = () => [
     {
         id: 1,

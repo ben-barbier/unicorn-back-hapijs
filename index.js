@@ -19,21 +19,6 @@ const db = {};
 const capacities = require('./data/capacities');
 const unicorns = require('./data/unicorns');
 
-const unicornSchema = Joi.object({
-    id: Joi.number(),
-    name: Joi.string().required(),
-    birthyear: Joi.number().integer().min(1900).max(new Date().getFullYear()),
-    weight: Joi.number(),
-    photo: Joi.string().uri().allow(''),
-    hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
-    capacities: Joi.array().items(Joi.number()).unique()
-});
-
-const capacitiesSchema = Joi.object({
-    id: Joi.number(),
-    label: Joi.string().required(),
-});
-
 const server = new Hapi.Server({
     connections: {
         routes: {
@@ -93,7 +78,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         response: {
-            schema: Joi.array().items(capacitiesSchema)
+            schema: Joi.array().items(capacities.schema)
         }
     }
 }, {
@@ -110,7 +95,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         response: {
-            schema: capacitiesSchema
+            schema: capacities.schema
         }
     }
 }, {
@@ -125,7 +110,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         validate: {
-            payload: capacitiesSchema
+            payload: capacities.schema
         }
     }
 }, {
@@ -146,7 +131,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         validate: {
-            payload: capacitiesSchema
+            payload: capacities.schema
         }
     }
 }, {
@@ -171,7 +156,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         response: {
-            schema: Joi.array().items(unicornSchema)
+            schema: Joi.array().items(unicorns.schema)
         }
     }
 }, {
@@ -188,7 +173,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         response: {
-            schema: unicornSchema
+            schema: unicorns.schema
         }
     }
 }, {
@@ -214,7 +199,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         validate: {
-            payload: unicornSchema
+            payload: unicorns.schema
         }
     }
 }, {
@@ -235,7 +220,7 @@ server.select('api').route([{
     config: {
         tags: ['api'],
         validate: {
-            payload: unicornSchema
+            payload: unicorns.schema
         }
     }
 }, {

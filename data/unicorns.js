@@ -1,3 +1,15 @@
+const Joi = require('joi');
+
+exports.schema = Joi.object({
+    id: Joi.number(),
+    name: Joi.string().required(),
+    birthyear: Joi.number().integer().min(1900).max(new Date().getFullYear()),
+    weight: Joi.number(),
+    photo: Joi.string().uri().allow(''),
+    hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
+    capacities: Joi.array().items(Joi.number()).unique()
+});
+
 exports.getUnicorns = (server) => {
     return [
         {
