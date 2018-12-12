@@ -11,7 +11,6 @@ const HapiSwagger = require('hapi-swagger');
 const Pack = require('./package');
 
 // Utils
-const _ = require('lodash');
 const portfinder = require('portfinder');
 
 // Data

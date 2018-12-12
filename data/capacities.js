@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const _ = require('lodash');
 
 const schema = Joi.object({
     id: Joi.number(),
