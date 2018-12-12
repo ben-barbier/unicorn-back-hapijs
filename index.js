@@ -2,7 +2,6 @@
 
 // Hapi
 const Hapi = require('hapi');
-const Joi = require('joi');
 const Path = require('path');
 
 // Swagger
