@@ -21,7 +21,6 @@
         "inert": "4.1.0",
         "joi": "10.1.0",
         "lodash": "^4.17.11",
-        "mongodb": "2.2.22",
         "portfinder": "^1.0.20",
         "socket.io": "^2.2.0",
         "vision": "4.1.1"
