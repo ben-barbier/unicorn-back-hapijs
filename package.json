@@ -4,7 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "serve": "node index.js",
+        "start": "./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\"",
+        "compile": "tsc && node ./dist/index.js",
+        "start-statics": "node index.js",
         "debug": "node --inspect=0.0.0.0:9229 index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -20,12 +22,19 @@
         "hapi-swagger": "^9.4.1",
         "inert": "^5.1.2",
         "joi": "^14.3.1",
+        "pjson": "^1.0.9",
         "portfinder": "^1.0.20",
         "socket.io": "^2.2.0",
         "vision": "^5.4.4"
     },
     "devDependencies": {
-        "cryptiles": ">=4.1.2"
+        "@types/hapi": "^18.0.1",
+        "@types/joi": "^14.3.2",
+        "@types/node": "^11.11.4",
+        "@types/socket.io": "^2.1.2",
+        "cryptiles": ">=4.1.2",
+        "nodemon": "^1.18.10",
+        "typescript": "^3.3.4000"
     },
     "engines": {
         "node": ">=8.0.0"

@@ -1,35 +1,35 @@
-'use strict';
+// TODO: Donner des messages explicites de retours par JOI
+// TODO: Passer un paramètre de delay à l'appli
+// TODO: Mettre sous Docker
+// TODO: "header HSTS" + "HTTPS"
+// TODO: ImmutableJS
+// TODO: vérifier que le debug fonctionne tjrs en TS
 
-// Hapi
-const Hapi = require('hapi');
-const Path = require('path');
-
-// Swagger
-const Inert = require('inert'); // static file and directory handler module for hapi.
-const Vision = require('vision');
-const HapiSwagger = require('hapi-swagger');
-const Pack = require('./package');
-
-// Utils
-const portfinder = require('portfinder');
+import * as hapi from 'hapi';
+import * as Path from 'path';
+import * as Inert from 'inert'; // static file and directory handler module for hapi.
+import * as Vision from 'vision';
+import * as HapiSwagger from 'hapi-swagger';
+import * as Pack from 'pjson';
+import * as portfinder from 'portfinder';
+import * as socketIo from 'socket.io';
 
 // Data
-const db = {};
+const db = {capacities: [], unicorns: []};
 const capacities = require('./data/capacities');
 const unicorns = require('./data/unicorns');
 
 (async () => {
-    portfinder.basePort = 3000;
-    const apiServerPort = await portfinder.getPortPromise();
+    const apiServerPort = await portfinder.getPortPromise({port: 3000});
 
-    const apiServer = new Hapi.server({
+    const apiServer = new hapi.Server({
         port: process.env.PORT || apiServerPort,
         host: 'localhost',
         routes: {
             cors: true,
             // Needed to serve static unicorn photos
             files: {
-                relativeTo: Path.join(__dirname, 'resources')
+                relativeTo: Path.join(__dirname, '../resources')
             }
         },
     });
@@ -57,22 +57,21 @@ const unicorns = require('./data/unicorns');
     ]);
 
     try {
-        await apiServer.start({debug: {request: ['error']}});
+        await apiServer.start();
     } catch (e) {
         console.log(e);
     }
 
-    portfinder.basePort = 3100;
-    const socketServerPort = await portfinder.getPortPromise();
+    const socketServerPort = await portfinder.getPortPromise({port: 3100});
 
-    const socketServer = new Hapi.server({
+    const socketServer = new hapi.Server({
         host: '127.0.0.1',
         port: process.env.PORT + 1 || socketServerPort,
         routes: {cors: true},
     });
 
     // Socket.io
-    const io = require('socket.io')(socketServer.listener);
+    const io = socketIo(socketServer.listener);
 
     // Add socket.io connection to count unicorns (like WebSocket)
     io.on('connection', (socket) => {

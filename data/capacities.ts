@@ -1,6 +1,4 @@
-'use strict';
-
-const Joi = require('joi');
+import * as Joi from 'joi';
 
 const schema = Joi.object({
     id: Joi.number(),
