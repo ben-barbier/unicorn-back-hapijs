@@ -5,7 +5,7 @@ const Hapi = require('hapi');
 const Path = require('path');
 
 // Swagger
-const Inert = require('inert');
+const Inert = require('inert'); // static file and directory handler module for hapi.
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const Pack = require('./package');
@@ -18,69 +18,61 @@ const db = {};
 const capacities = require('./data/capacities');
 const unicorns = require('./data/unicorns');
 
-const server = new Hapi.Server({
-    connections: {
+(async () => {
+    portfinder.basePort = 3000;
+    const apiServerPort = await portfinder.getPortPromise();
+
+    const apiServer = new Hapi.server({
+        port: process.env.PORT || apiServerPort,
+        host: 'localhost',
         routes: {
             cors: true,
             // Needed to serve static unicorn photos
             files: {
                 relativeTo: Path.join(__dirname, 'resources')
             }
-        }
-    }
-});
-
-portfinder.basePort = 3000;
-portfinder.getPortPromise().then((port) => {
-    server.connection({
-        host: '127.0.0.1',
-        port: process.env.PORT || port,
-        labels: ['api'],
+        },
     });
 
-    server.select('api').register([
+    await apiServer.register([
         Inert,
-        Vision,
-        {
-            'register': HapiSwagger,
+        Vision, {
+            'plugin': HapiSwagger,
             'options': {
                 info: {
                     'title': Pack.name + ' API Documentation',
                     'version': Pack.version,
                 }
             }
-        }], (err) => {
-        // Start the server
-        server.start((err) => {
-            if (err) {
-                throw err;
-            }
-            db.capacities = capacities.getCapacities();
-            db.unicorns = unicorns.getUnicorns(server.select('api'));
-            console.log('API                 running at:', server.select('api').info.uri);
-            console.log('Socket              running at:', server.select('count-unicorns').info.uri);
-            console.log('API documentation available at:', server.select('api').info.uri + '/documentation');
-        });
-    });
-
-    // Add routes
-    server.select('api').route([
-        ...unicorns.getRoutes(db),
-        ...capacities.getRoutes(db)
+        }
     ]);
 
-});
+    db.capacities = capacities.getCapacities();
+    db.unicorns = unicorns.getUnicorns(apiServer);
 
-portfinder.basePort = 3100;
-portfinder.getPortPromise().then((port) => {
-    server.connection({
+    // Add routes
+    apiServer.route([
+        ...unicorns.getRoutes(db),
+        ...capacities.getRoutes(db),
+    ]);
+
+    try {
+        await apiServer.start({debug: {request: ['error']}});
+    } catch (e) {
+        console.log(e);
+    }
+
+    portfinder.basePort = 3100;
+    const socketServerPort = await portfinder.getPortPromise();
+
+    const socketServer = new Hapi.server({
         host: '127.0.0.1',
-        port: process.env.PORT + 1 || port,
-        labels: ['count-unicorns'],
+        port: process.env.PORT + 1 || socketServerPort,
+        routes: {cors: true},
     });
 
     // Socket.io
-    const io = require('socket.io')(server.select('count-unicorns').listener);
+    const io = require('socket.io')(socketServer.listener);
 
     // Add socket.io connection to count unicorns (like WebSocket)
     io.on('connection', (socket) => {
@@ -105,4 +97,8 @@ portfinder.getPortPromise().then((port) => {
 
     });
 
-});
+    console.log('API                 running at:', apiServer.info.uri);
+    console.log('Socket              running at:', socketServer.info.uri);
+    console.log('API documentation available at:', apiServer.info.uri + '/documentation');
+
+})();

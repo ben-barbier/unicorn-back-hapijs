@@ -1,12 +1,12 @@
 'use strict';
 
 const Joi = require('joi');
-const _ = require('lodash');
+const Path = require('path');
 
 const schema = Joi.object({
     id: Joi.number(),
     name: Joi.string().required(),
-    birthyear: Joi.number().integer().min(1900).max(new Date().getFullYear()),
+    birthyear: Joi.number().integer().min(1800).max(new Date().getFullYear()),
     weight: Joi.number(),
     photo: Joi.string().uri().allow(''),
     hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
@@ -16,53 +16,63 @@ const schema = Joi.object({
 const getRoutes = (db) => [{
     method: 'GET',
     path: '/unicorns',
-    handler: function (request, reply) {
-        return reply(db.unicorns);
+    handler: function (request, h) {
+        return new Promise(function (resolve) {
+            setTimeout(() => {
+                resolve(h.response(db.unicorns));
+            }, 180);
+        });
     },
-    config: {
+    options: {
         tags: ['api'],
         response: {
             schema: Joi.array().items(schema)
         }
-    }
+
+    },
 }, {
     method: 'GET',
     path: '/unicorns/{unicornId}',
-    handler: function (request, reply) {
-        const unicorn = _(db.unicorns).find({id: +request.params.unicornId});
+    handler: function (request, h) {
+        const unicorn = db.unicorns.find(u => u.id === +request.params.unicornId);
         if (unicorn) {
-            return reply(unicorn);
+            return new Promise(function (resolve) {
+                setTimeout(() => {
+                    resolve(unicorn);
+                }, 180);
+            });
         } else {
-            return reply(`Unicorn '${request.params.unicornId}' not found`).code(404);
+            return new Promise(function (resolve) {
+                setTimeout(() => {
+                    resolve(h.response(`Unicorn '${request.params.unicornId}' not found`).code(404));
+                }, 180);
+            });
         }
     },
-    config: {
+    options: {
         tags: ['api'],
         response: {
             schema: schema
         }
     }
 }, {
-    // Add unicorns photos
     method: 'GET',
-    path: '/unicorns/{param*}',
-    handler: {
-        directory: {
-            path: '.',
-            redirectToSlash: true,
-            index: true,
-        }
+    path: '/unicorns/photos/{photoUrl*}',
+    handler: function (request, h) {
+        return h.file('../resources/photos/' + request.params.photoUrl);
     }
 }, {
     method: 'POST',
     path: '/unicorns',
-    handler: function (request, reply) {
-        let newUnicorn = request.payload;
-        newUnicorn.id = (_(db.unicorns).map('id').max() || 0) + 1;
+    handler: function (request, h) {
+        const newUnicorn = {
+            ...request.payload,
+            id: db.unicorns.reduce((acc, val) => (val.id > acc) ? val.id : acc, 1) + 1
+        };
         db.unicorns.push(newUnicorn);
-        return reply(newUnicorn).code(201);
+        return h.response(newUnicorn).code(201);
     },
-    config: {
+    options: {
         tags: ['api'],
         validate: {
             payload: schema
@@ -71,19 +81,19 @@ const getRoutes = (db) => [{
 }, {
     method: 'PUT',
     path: '/unicorns/{unicornId}',
-    handler: function (request, reply) {
+    handler: function (request, h) {
         const updatedUnicorn = request.payload;
         if (updatedUnicorn.id !== +request.params.unicornId) {
-            return reply('Incoherent unicorn ID between request param and payload').code(500);
+            return h.response('Incoherent unicorn ID between request param and payload').code(500);
         }
-        if (!_(db.unicorns).find({id: updatedUnicorn.id})) {
-            return reply(`Unicorn '${request.params.unicornId}' not found`).code(404);
+        if (!db.unicorns.some(u => u.id === updatedUnicorn.id)) {
+            return h.response(`Unicorn '${request.params.unicornId}' not found`).code(404);
         }
-        db.unicorns = _(db.unicorns).filter((unicorn) => unicorn.id !== updatedUnicorn.id).value();
+        db.unicorns = db.unicorns.filter(u => u.id !== updatedUnicorn.id);
         db.unicorns.push(updatedUnicorn);
-        return reply(updatedUnicorn);
+        return updatedUnicorn;
     },
-    config: {
+    options: {
         tags: ['api'],
         validate: {
             payload: schema
@@ -92,14 +102,14 @@ const getRoutes = (db) => [{
 }, {
     method: 'DELETE',
     path: '/unicorns/{unicornId}',
-    handler: function (request, reply) {
-        if (!_(db.unicorns).find({id: +request.params.unicornId})) {
-            return reply(`Unicorn '${request.params.unicornId}' not found`).code(404);
+    handler: function (request, h) {
+        if (!db.unicorns.some(u => u.id === +request.params.unicornId)) {
+            return h.response(`Unicorn '${request.params.unicornId}' not found`).code(404);
         }
-        db.unicorns = _(db.unicorns).filter((unicorn) => unicorn.id !== +request.params.unicornId).value();
-        return reply();
+        db.unicorns = db.unicorns.filter(u => u.id !== +request.params.unicornId);
+        return h.response();
     },
-    config: {
+    options: {
         tags: ['api']
     }
 }];

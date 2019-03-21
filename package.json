@@ -16,14 +16,13 @@
     "license": "ISC",
     "homepage": "https://bitbucket.org/symbolit/unicorn-back",
     "dependencies": {
-        "hapi": "^16.6.2",
-        "hapi-swagger": "7.5.0",
-        "inert": "4.1.0",
-        "joi": "10.1.0",
-        "lodash": "^4.17.11",
+        "hapi": "^18.1.0",
+        "hapi-swagger": "^9.4.1",
+        "inert": "^5.1.2",
+        "joi": "^14.3.1",
         "portfinder": "^1.0.20",
         "socket.io": "^2.2.0",
-        "vision": "4.1.1"
+        "vision": "^5.4.4"
     },
     "devDependencies": {
         "cryptiles": ">=4.1.2"

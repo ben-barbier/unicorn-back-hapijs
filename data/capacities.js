@@ -1,7 +1,6 @@
 'use strict';
 
 const Joi = require('joi');
-const _ = require('lodash');
 
 const schema = Joi.object({
     id: Joi.number(),
@@ -11,10 +10,10 @@ const schema = Joi.object({
 const getRoutes = (db) => [{
     method: 'GET',
     path: '/capacities',
-    handler: function (request, reply) {
-        return reply(db.capacities);
+    handler: function (request, h) {
+        return db.capacities;
     },
-    config: {
+    options: {
         tags: ['api'],
         response: {
             schema: Joi.array().items(schema)
@@ -23,15 +22,15 @@ const getRoutes = (db) => [{
 }, {
     method: 'GET',
     path: '/capacities/{capacityId}',
-    handler: function (request, reply) {
-        const capacity = _(db.capacities).find({id: +request.params.capacityId});
+    handler: function (request, h) {
+        const capacity = db.capacities.find(c => c.id === +request.params.capacityId);
         if (capacity) {
-            return reply(capacity);
+            return capacity;
         } else {
-            return reply(`Capacity '${request.params.capacityId}' not found`).code(404);
+            return h.response(`Capacity '${request.params.capacityId}' not found`).code(404);
         }
     },
-    config: {
+    options: {
         tags: ['api'],
         response: {
             schema: schema
@@ -40,13 +39,15 @@ const getRoutes = (db) => [{
 }, {
     method: 'POST',
     path: '/capacities',
-    handler: function (request, reply) {
-        let newCapacity = request.payload;
-        newCapacity.id = (_(db.capacities).map('id').max() || 0) + 1;
+    handler: function (request, h) {
+        let newCapacity = {
+            ...request.payload,
+            id: db.capacities.reduce((acc, val) => (val.id > acc) ? val.id : acc, 1) + 1
+        };
         db.capacities.push(newCapacity);
-        return reply(newCapacity).code(201);
+        return h.response(newCapacity).code(201);
     },
-    config: {
+    options: {
         tags: ['api'],
         validate: {
             payload: schema
@@ -55,19 +56,19 @@ const getRoutes = (db) => [{
 }, {
     method: 'PUT',
     path: '/capacities/{capacityId}',
-    handler: function (request, reply) {
+    handler: function (request, h) {
         const updatedCapacity = request.payload;
         if (updatedCapacity.id !== +request.params.capacityId) {
-            return reply('Incoherent capacity ID between request param and payload').code(500);
+            return h.response('Incoherent capacity ID between request param and payload').code(500);
         }
-        if (!_(db.capacities).find({id: updatedCapacity.id})) {
-            return reply(`Capacity '${request.params.capacityId}' not found`).code(404);
+        if (!db.capacities.some(c => c.id === updatedCapacity.id)) {
+            return h.response(`Capacity '${request.params.capacityId}' not found`).code(404);
         }
-        db.capacities = _(db.capacities).filter((capacity) => capacity.id !== updatedCapacity.id).value();
+        db.capacities = db.capacities.filter(c => c.id !== updatedCapacity.id);
         db.capacities.push(updatedCapacity);
-        return reply(updatedCapacity);
+        return updatedCapacity;
     },
-    config: {
+    options: {
         tags: ['api'],
         validate: {
             payload: schema
@@ -76,14 +77,14 @@ const getRoutes = (db) => [{
 }, {
     method: 'DELETE',
     path: '/capacities/{capacityId}',
-    handler: function (request, reply) {
-        if (!_(db.capacities).find({id: +request.params.capacityId})) {
-            return reply(`Capacity '${request.params.capacityId}' not found`).code(404);
+    handler: function (request, h) {
+        if (!db.capacities.some(c => c.id === +request.params.capacityId)) {
+            return h.response(`Capacity '${request.params.capacityId}' not found`).code(404);
         }
-        db.capacities = _(db.capacities).filter((capacity) => capacity.id !== +request.params.capacityId).value();
-        return reply();
+        db.capacities = db.capacities.filter(c => c.id !== +request.params.capacityId);
+        return h.response();
     },
-    config: {
+    options: {
         tags: ['api']
     }
 }];
