@@ -160,6 +160,42 @@ const getUnicorns = (server) => {
             photo: server.info.uri + '/unicorns/photos/unicorn-6.jpg',
             hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction'],
             capacities: [1, 2, 3]
+        },
+        {
+            id: 7,
+            name: 'Hervé',
+            birthyear: new Date().getFullYear() - 9,
+            weight: 21,
+            photo: server.info.uri + '/unicorns/photos/unicorn-7.jpg',
+            hobbies: ['Drink', 'Football', 'cycling'],
+            capacities: [3]
+        },
+        {
+            id: 8,
+            name: 'Christian',
+            birthyear: new Date().getFullYear() - 35,
+            weight: 75,
+            photo: server.info.uri + '/unicorns/photos/unicorn-8.png',
+            hobbies: ['Horsing', 'Gymnastic', 'Parties'],
+            capacities: [2, 4]
+        },
+        {
+            id: 9,
+            name: 'Gandalf',
+            birthyear: new Date().getFullYear() - 150,
+            weight: 65,
+            photo: server.info.uri + '/unicorns/photos/unicorn-9.png',
+            hobbies: ['Dragons', 'Magic'],
+            capacities: [4]
+        },
+        {
+            id: 10,
+            name: 'Donatello, Raphael, Michelangelo & leonardo',
+            birthyear: new Date().getFullYear() - 21,
+            weight: 300,
+            photo: server.info.uri + '/unicorns/photos/unicorn-10.jpg',
+            hobbies: ['Pizzas', 'Martial arts'],
+            capacities: [1, 2]
         }
     ];
 };
