@@ -1,7 +1,7 @@
 {
     "name": "unicorn-back",
     "version": "1.0.0",
-    "description": "",
+    "description": "🦄 API",
     "main": "index.js",
     "scripts": {
         "start": "./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run compile\"",
