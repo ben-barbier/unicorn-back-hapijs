@@ -14,12 +14,12 @@ import * as portfinder from 'portfinder';
 import * as socketIo from 'socket.io';
 
 // Data
-const db = {capacities: [], unicorns: []};
+const db = { capacities: [], unicorns: [] };
 const capacities = require('./data/capacities');
 const unicorns = require('./data/unicorns');
 
 (async () => {
-    const apiServerPort = await portfinder.getPortPromise({port: 3000});
+    const apiServerPort = await portfinder.getPortPromise({ port: 3000 });
 
     const apiServer = new hapi.Server({
         port: process.env.PORT || apiServerPort,
@@ -29,7 +29,7 @@ const unicorns = require('./data/unicorns');
             // Needed to serve static unicorn photos
             files: {
                 relativeTo: Path.join(__dirname, '../resources')
-            }
+            },
         },
     });
 
@@ -61,15 +61,14 @@ const unicorns = require('./data/unicorns');
         console.log(e);
     }
 
-    const socketServerPort = await portfinder.getPortPromise({port: 3100});
+    const socketServerPort = await portfinder.getPortPromise({ port: 3100 });
 
     const socketServer = new hapi.Server({
         host: '0.0.0.0',
         port: process.env.PORT + 1 || socketServerPort,
-        routes: {cors: true},
+        routes: { cors: true },
     });
 
-    // Socket.io
     const io = socketIo(socketServer.listener);
 
     // Add socket.io connection to count unicorns (like WebSocket)
@@ -78,11 +77,12 @@ const unicorns = require('./data/unicorns');
         console.log('user connected');
         let count = Math.floor(Math.random() * 1000);
 
-        const sendNewCountValue = setInterval(() => {
-            count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
-            console.log(count);
-            socket.emit('count', count);
-        }, 500);
+        const sendNewCountValue = setInterval(
+            () => {
+                count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
+                console.log(count);
+                socket.emit('count', count);
+            }, 500);
 
         socket.on('disconnect', () => {
             console.log('user disconnected');
@@ -97,6 +97,6 @@ const unicorns = require('./data/unicorns');
 
     console.log('API                 running at:', apiServer.info.uri);
     console.log('Socket              running at:', socketServer.info.uri);
-    console.log('API documentation available at:', apiServer.info.uri + '/documentation');
+    console.log('API documentation available at:', `${apiServer.info.uri}/documentation`);
 
 })();

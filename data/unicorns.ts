@@ -7,14 +7,14 @@ const schema = Joi.object({
     weight: Joi.number(),
     photo: Joi.string().uri().allow(''),
     hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
-    capacities: Joi.array().items(Joi.number()).unique()
+    capacities: Joi.array().items(Joi.number()).unique(),
 });
 
-const getRoutes = (db) => [{
+const getRoutes = db => [{
     method: 'GET',
     path: '/unicorns',
-    handler: function (request, h) {
-        return new Promise(function (resolve) {
+    handler: (request, h) => {
+        return new Promise((resolve) => {
             setTimeout(() => {
                 resolve(h.response(db.unicorns));
             }, 180);
@@ -23,45 +23,43 @@ const getRoutes = (db) => [{
     options: {
         tags: ['api'],
         response: {
-            schema: Joi.array().items(schema)
-        }
-
+            schema: Joi.array().items(schema),
+        },
     },
 }, {
     method: 'GET',
     path: '/unicorns/{unicornId}',
-    handler: function (request, h) {
+    handler: (request, h) => {
         const unicorn = db.unicorns.find(u => u.id === +request.params.unicornId);
         if (unicorn) {
-            return new Promise(function (resolve) {
+            return new Promise((resolve) => {
                 setTimeout(() => {
                     resolve(unicorn);
                 }, 180);
             });
-        } else {
-            return new Promise(function (resolve) {
-                setTimeout(() => {
-                    resolve(h.response(`Unicorn '${request.params.unicornId}' not found`).code(404));
-                }, 180);
-            });
         }
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(h.response(`Unicorn '${request.params.unicornId}' not found`).code(404));
+            }, 180);
+        });
     },
     options: {
         tags: ['api'],
         response: {
-            schema: schema
-        }
-    }
+            schema,
+        },
+    },
 }, {
     method: 'GET',
     path: '/unicorns/photos/{photoUrl*}',
-    handler: function (request, h) {
-        return h.file('../resources/photos/' + request.params.photoUrl);
+    handler: (request, h) => {
+        return h.file(`../resources/photos/${request.params.photoUrl}`);
     }
 }, {
     method: 'POST',
     path: '/unicorns',
-    handler: function (request, h) {
+    handler: (request, h) => {
         const newUnicorn = {
             ...request.payload,
             id: db.unicorns.reduce((acc, val) => (val.id > acc) ? val.id : acc, 1) + 1
@@ -72,13 +70,13 @@ const getRoutes = (db) => [{
     options: {
         tags: ['api'],
         validate: {
-            payload: schema
-        }
-    }
+            payload: schema,
+        },
+    },
 }, {
     method: 'PUT',
     path: '/unicorns/{unicornId}',
-    handler: function (request, h) {
+    handler: (request, h) => {
         const updatedUnicorn = request.payload;
         if (updatedUnicorn.id !== +request.params.unicornId) {
             return h.response('Incoherent unicorn ID between request param and payload').code(500);
@@ -93,13 +91,13 @@ const getRoutes = (db) => [{
     options: {
         tags: ['api'],
         validate: {
-            payload: schema
-        }
-    }
+            payload: schema,
+        },
+    },
 }, {
     method: 'DELETE',
     path: '/unicorns/{unicornId}',
-    handler: function (request, h) {
+    handler: (request, h) => {
         if (!db.unicorns.some(u => u.id === +request.params.unicornId)) {
             return h.response(`Unicorn '${request.params.unicornId}' not found`).code(404);
         }
@@ -107,8 +105,8 @@ const getRoutes = (db) => [{
         return h.response();
     },
     options: {
-        tags: ['api']
-    }
+        tags: ['api'],
+    },
 }];
 
 const getUnicorns = (server) => {
@@ -120,7 +118,7 @@ const getUnicorns = (server) => {
             weight: 10,
             photo: server.info.uri + '/unicorns/photos/unicorn-1.jpg',
             hobbies: ['Sleep', 'Cry'],
-            capacities: [1, 2]
+            capacities: [1, 2],
         },
         {
             id: 2,
@@ -129,7 +127,7 @@ const getUnicorns = (server) => {
             weight: 32,
             photo: server.info.uri + '/unicorns/photos/unicorn-2.jpg',
             hobbies: ['Coffee', 'Sing', 'Cinema'],
-            capacities: [1]
+            capacities: [1],
 
         },
         {
@@ -139,7 +137,7 @@ const getUnicorns = (server) => {
             weight: 45,
             photo: server.info.uri + '/unicorns/photos/unicorn-3.png',
             hobbies: ['Read', 'Photography'],
-            capacities: [2]
+            capacities: [2],
         },
         {
             id: 4,
@@ -148,7 +146,7 @@ const getUnicorns = (server) => {
             weight: 54,
             photo: server.info.uri + '/unicorns/photos/unicorn-4.jpg',
             hobbies: ['Sport', 'Music'],
-            capacities: []
+            capacities: [],
         },
         {
             id: 5,
@@ -157,7 +155,7 @@ const getUnicorns = (server) => {
             weight: 90,
             photo: server.info.uri + '/unicorns/photos/unicorn-5.jpg',
             hobbies: ['Cut wood', 'Hockey'],
-            capacities: [3]
+            capacities: [3],
         },
         {
             id: 6,
@@ -166,7 +164,7 @@ const getUnicorns = (server) => {
             weight: 46,
             photo: server.info.uri + '/unicorns/photos/unicorn-6.jpg',
             hobbies: ['Vampire Diaries', 'Gossip Girl', 'Justin Bieber', 'One Direction'],
-            capacities: [1, 2, 3]
+            capacities: [1, 2, 3],
         },
         {
             id: 7,
@@ -175,7 +173,7 @@ const getUnicorns = (server) => {
             weight: 21,
             photo: server.info.uri + '/unicorns/photos/unicorn-7.jpg',
             hobbies: ['Drink', 'Football', 'cycling'],
-            capacities: [3]
+            capacities: [3],
         },
         {
             id: 8,
@@ -184,7 +182,7 @@ const getUnicorns = (server) => {
             weight: 75,
             photo: server.info.uri + '/unicorns/photos/unicorn-8.png',
             hobbies: ['Horsing', 'Gymnastic', 'Parties'],
-            capacities: [2, 4]
+            capacities: [2, 4],
         },
         {
             id: 9,
@@ -193,7 +191,7 @@ const getUnicorns = (server) => {
             weight: 65,
             photo: server.info.uri + '/unicorns/photos/unicorn-9.png',
             hobbies: ['Dragons', 'Magic'],
-            capacities: [4]
+            capacities: [4],
         },
         {
             id: 10,
@@ -202,9 +200,9 @@ const getUnicorns = (server) => {
             weight: 300,
             photo: server.info.uri + '/unicorns/photos/unicorn-10.jpg',
             hobbies: ['Pizzas', 'Martial arts'],
-            capacities: [1, 2]
-        }
+            capacities: [1, 2],
+        },
     ];
 };
 
-module.exports = {getRoutes, getUnicorns, schema};
+module.exports = { getRoutes, getUnicorns, schema };

@@ -1,0 +1,9 @@
+{
+    "defaultSeverity": "error",
+    "extends": [],
+    "jsRules": {},
+    "rules": {
+        "ter-indent": [true, 4]
+    },
+    "rulesDirectory": []
+}
