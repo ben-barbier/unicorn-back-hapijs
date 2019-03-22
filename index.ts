@@ -1,6 +1,5 @@
 // TODO: Donner des messages explicites de retours par JOI
 // TODO: Passer un paramètre de delay à l'appli
-// TODO: Mettre sous Docker
 // TODO: "header HSTS" + "HTTPS"
 // TODO: ImmutableJS
 // TODO: vérifier que le debug fonctionne tjrs en TS
@@ -24,7 +23,7 @@ const unicorns = require('./data/unicorns');
 
     const apiServer = new hapi.Server({
         port: process.env.PORT || apiServerPort,
-        host: 'localhost',
+        host: '0.0.0.0',
         routes: {
             cors: true,
             // Needed to serve static unicorn photos
@@ -65,7 +64,7 @@ const unicorns = require('./data/unicorns');
     const socketServerPort = await portfinder.getPortPromise({port: 3100});
 
     const socketServer = new hapi.Server({
-        host: '127.0.0.1',
+        host: '0.0.0.0',
         port: process.env.PORT + 1 || socketServerPort,
         routes: {cors: true},
     });
