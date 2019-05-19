@@ -9,8 +9,6 @@ RUN npm install
 
 COPY . .
 
-RUN ls -la
-
 RUN npm run compile
 
 EXPOSE 3000
