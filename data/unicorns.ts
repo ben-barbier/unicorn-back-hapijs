@@ -102,7 +102,7 @@ const getRoutes = db => [{
             return h.response(`Unicorn '${request.params.unicornId}' not found`).code(404);
         }
         db.unicorns = db.unicorns.filter(u => u.id !== +request.params.unicornId);
-        return h.response();
+        return h.response().code(204);
     },
     options: {
         tags: ['api'],

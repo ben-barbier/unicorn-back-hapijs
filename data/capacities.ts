@@ -79,7 +79,7 @@ const getRoutes = db => [{
             return h.response(`Capacity '${request.params.capacityId}' not found`).code(404);
         }
         db.capacities = db.capacities.filter(c => c.id !== +request.params.capacityId);
-        return h.response();
+        return h.response().code(204);
     },
     options: {
         tags: ['api'],
