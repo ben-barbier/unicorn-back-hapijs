@@ -55,12 +55,6 @@ const unicorns = require('./data/unicorns');
         ...capacities.getRoutes(db),
     ]);
 
-    try {
-        await apiServer.start();
-    } catch (e) {
-        console.log(e);
-    }
-
     const socketServerPort = await portfinder.getPortPromise({ port: 3100 });
 
     const socketServer = new hapi.Server({
@@ -77,12 +71,11 @@ const unicorns = require('./data/unicorns');
         console.log('user connected');
         let count = Math.floor(Math.random() * 1000);
 
-        const sendNewCountValue = setInterval(
-            () => {
-                count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
-                console.log(count);
-                socket.emit('count', count);
-            }, 500);
+        const sendNewCountValue = setInterval(() => {
+            count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
+            console.log(count);
+            socket.emit('count', count);
+        }, 500);
 
         socket.on('disconnect', () => {
             console.log('user disconnected');
@@ -94,6 +87,13 @@ const unicorns = require('./data/unicorns');
         });
 
     });
+
+    try {
+        await apiServer.start();
+        await socketServer.start();
+    } catch (e) {
+        console.log(e);
+    }
 
     console.log('API                 running at:', apiServer.info.uri);
     console.log('Socket              running at:', socketServer.info.uri);
