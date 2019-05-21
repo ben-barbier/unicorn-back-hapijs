@@ -1,7 +1,7 @@
 import * as Joi from 'joi';
 
 const schema = Joi.object({
-    id: Joi.number(),
+    id: Joi.number().required(),
     label: Joi.string().required(),
 });
 

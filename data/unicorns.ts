@@ -1,13 +1,13 @@
 import * as Joi from 'joi';
 
 const schema = Joi.object({
-    id: Joi.number(),
+    id: Joi.number().required(),
     name: Joi.string().required(),
-    birthyear: Joi.number().integer().min(1800).max(new Date().getFullYear()),
-    weight: Joi.number(),
-    photo: Joi.string().uri().allow(''),
+    birthyear: Joi.number().required().integer().min(1800).max(new Date().getFullYear()),
+    weight: Joi.number().required(),
+    photo: Joi.string().required().uri().allow(''),
     hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
-    capacities: Joi.array().items(Joi.number()).unique(),
+    capacities: Joi.array().required().items(Joi.number()).min(0).unique(),
 });
 
 const getRoutes = db => [{
