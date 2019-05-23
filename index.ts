@@ -12,13 +12,11 @@ import * as HapiSwagger from 'hapi-swagger';
 import * as Pack from 'pjson';
 import * as portfinder from 'portfinder';
 import * as socketIo from 'socket.io';
-
-// Data
-const db = { capacities: [], unicorns: [] };
-const capacities = require('./data/capacities');
-const unicorns = require('./data/unicorns');
+import { DB } from './database';
+import { initSockets } from './sockets';
 
 (async () => {
+
     const apiServerPort = await portfinder.getPortPromise({ port: 3000 });
 
     const apiServer = new hapi.Server({
@@ -46,15 +44,6 @@ const unicorns = require('./data/unicorns');
         }
     ]);
 
-    db.capacities = capacities.getCapacities();
-    db.unicorns = unicorns.getUnicorns(apiServer);
-
-    // Add routes
-    apiServer.route([
-        ...unicorns.getRoutes(db),
-        ...capacities.getRoutes(db),
-    ]);
-
     const socketServerPort = await portfinder.getPortPromise({ port: 3100 });
 
     const socketServer = new hapi.Server({
@@ -65,28 +54,21 @@ const unicorns = require('./data/unicorns');
 
     const io = socketIo(socketServer.listener);
 
-    // Add socket.io connection to count unicorns (like WebSocket)
-    io.on('connection', (socket) => {
+    const db = new DB(io);
 
-        console.log('user connected');
-        let count = Math.floor(Math.random() * 1000);
+    const capacities = require('./data/capacities');
+    const unicorns = require('./data/unicorns');
 
-        const sendNewCountValue = setInterval(() => {
-            count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
-            console.log(count);
-            socket.emit('count', count);
-        }, 500);
+    db.capacities = capacities.getCapacities();
+    db.unicorns = unicorns.getUnicorns(apiServer);
 
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-            clearInterval(sendNewCountValue);
-        });
+    initSockets(db, io);
 
-        socket.on('ISawOne', () => {
-            count++;
-        });
-
-    });
+    // Add routes
+    apiServer.route([
+        ...unicorns.getRoutes(db),
+        ...capacities.getRoutes(db),
+    ]);
 
     try {
         await apiServer.start();
