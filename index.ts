@@ -1,7 +1,5 @@
 // TODO: Donner des messages explicites de retours par JOI
-// TODO: Passer un paramètre de delay à l'appli
 // TODO: "header HSTS" + "HTTPS"
-// TODO: ImmutableJS
 // TODO: vérifier que le debug fonctionne tjrs en TS
 
 import * as hapi from 'hapi';

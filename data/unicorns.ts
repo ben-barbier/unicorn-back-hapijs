@@ -81,6 +81,9 @@ const getRoutes = db => [{
         validate: {
             payload: postJoiSchema,
         },
+        response: {
+            schema,
+        },
     },
 }, {
     method: 'PUT',
@@ -101,6 +104,10 @@ const getRoutes = db => [{
         tags: ['api'],
         validate: {
             payload: joiSchema,
+        },
+        response: {
+            schema,
+            // failAction: 'log',
         },
     },
 }, {
