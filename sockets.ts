@@ -27,17 +27,17 @@ export function initSockets (db: DB, io: Server) {
 
         socket.on('POST:unicorns', (unicorn) => {
             db.unicorns = [db.unicorns, unicorn];
-            socket.emit('unicorns', db.unicorns);
+            io.emit('unicorns', db.unicorns);
         });
 
         socket.on('PUT:unicorns', (unicorn) => {
             db.unicorns = [db.unicorns.filter(u => u.id !== unicorn.id), unicorn];
-            socket.emit('unicorns', db.unicorns);
+            io.emit('unicorns', db.unicorns);
         });
 
         socket.on('DELETE:unicorns', (unicorn) => {
             db.unicorns = db.unicorns.filter(u => u.id !== unicorn.id);
-            socket.emit('unicorns', db.unicorns);
+            io.emit('unicorns', db.unicorns);
         });
 
     });
@@ -50,17 +50,17 @@ export function initSockets (db: DB, io: Server) {
 
         socket.on('POST:capacities', (capacity) => {
             db.capacities = [db.capacities, capacity];
-            socket.emit('capacities', db.capacities);
+            io.emit('capacities', db.capacities);
         });
 
         socket.on('PUT:capacities', (capacity) => {
             db.capacities = [db.capacities.filter(u => u.id !== capacity.id), capacity];
-            socket.emit('capacities', db.capacities);
+            io.emit('capacities', db.capacities);
         });
 
         socket.on('DELETE:capacities', (capacity) => {
             db.capacities = db.capacities.filter(u => u.id !== capacity.id);
-            socket.emit('capacities', db.capacities);
+            io.emit('capacities', db.capacities);
         });
 
     });
