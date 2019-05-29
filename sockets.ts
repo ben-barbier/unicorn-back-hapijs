@@ -6,7 +6,6 @@ export function initSockets (db: DB, io: Server) {
     let count = Math.floor(Math.random() * 1000);
     setInterval(() => {
         count = Math.round(Math.random() + 0.3) ? count + 1 : count - 1;
-        console.log(count);
         io.of('/count').emit('count', count); // emit count on all initSockets
     }, 300);
 
