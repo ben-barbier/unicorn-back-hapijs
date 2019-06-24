@@ -1,13 +1,22 @@
 import * as Joi from 'joi';
 
-const schema = Joi.object({
-    id: Joi.number().required(),
+const schema = {
     name: Joi.string().required(),
     birthyear: Joi.number().required().integer().min(1800).max(new Date().getFullYear()),
     weight: Joi.number().required(),
     photo: Joi.string().required().uri().allow(''),
     hobbies: Joi.array().required().items(Joi.string().trim()).min(0).unique(),
     capacities: Joi.array().required().items(Joi.number()).min(0).unique(),
+};
+
+const postJoiSchema = Joi.object({
+    ...schema,
+    id: Joi.forbidden(),
+});
+
+const joiSchema = Joi.object({
+    ...schema,
+    id: Joi.number().required(),
 });
 
 const getRoutes = db => [{
@@ -23,7 +32,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         response: {
-            schema: Joi.array().items(schema),
+            schema: Joi.array().items(joiSchema),
         },
     },
 }, {
@@ -47,7 +56,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         response: {
-            schema,
+            schema: joiSchema,
         },
     },
 }, {
@@ -70,7 +79,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         validate: {
-            payload: schema,
+            payload: postJoiSchema,
         },
     },
 }, {
@@ -91,7 +100,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         validate: {
-            payload: schema,
+            payload: joiSchema,
         },
     },
 }, {
