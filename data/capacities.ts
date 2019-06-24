@@ -105,4 +105,4 @@ const getCapacities = () => [
     },
 ];
 
-module.exports = { getRoutes, getCapacities, schema };
+module.exports = { getRoutes, getCapacities };

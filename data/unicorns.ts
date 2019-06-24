@@ -205,4 +205,4 @@ const getUnicorns = (server) => {
     ];
 };
 
-module.exports = { getRoutes, getUnicorns, schema };
+module.exports = { getRoutes, getUnicorns };
