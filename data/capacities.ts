@@ -1,8 +1,17 @@
 import * as Joi from 'joi';
 
-const schema = Joi.object({
-    id: Joi.number().required(),
+const schema = {
     label: Joi.string().required(),
+};
+
+const postJoiSchema = Joi.object({
+    ...schema,
+    id: Joi.forbidden(),
+});
+
+const joiSchema = Joi.object({
+    ...schema,
+    id: Joi.number().required(),
 });
 
 const getRoutes = db => [{
@@ -14,7 +23,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         response: {
-            schema: Joi.array().items(schema),
+            schema: Joi.array().items(joiSchema),
         },
     },
 }, {
@@ -30,7 +39,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         response: {
-            schema,
+            schema: joiSchema,
         },
     },
 }, {
@@ -47,7 +56,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         validate: {
-            payload: schema,
+            payload: postJoiSchema,
         },
     },
 }, {
@@ -68,7 +77,7 @@ const getRoutes = db => [{
     options: {
         tags: ['api'],
         validate: {
-            payload: schema,
+            payload: joiSchema,
         },
     },
 }, {
@@ -105,4 +114,4 @@ const getCapacities = () => [
     },
 ];
 
-module.exports = { getRoutes, getCapacities, schema };
+module.exports = { getRoutes, getCapacities };
