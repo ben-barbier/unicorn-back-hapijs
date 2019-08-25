@@ -15,6 +15,6 @@ Run project without Docker :
 git clone https://github.com/ben-barbier/unicorn-back
 cd unicorn-back
 npm install 
-npm run compile
+npm run build
 npm start 
 ```
