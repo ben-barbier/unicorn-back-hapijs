@@ -23,20 +23,20 @@
         "inert": "^5.1.2",
         "joi": "^14.3.1",
         "pjson": "^1.0.9",
-        "portfinder": "^1.0.20",
+        "portfinder": "^1.0.23",
         "socket.io": "^2.2.0",
         "vision": "^5.4.4"
     },
     "devDependencies": {
         "@types/hapi": "^18.0.1",
         "@types/joi": "^14.3.2",
-        "@types/node": "^11.11.4",
+        "@types/node": "^11.13.19",
         "@types/socket.io": "^2.1.2",
         "cryptiles": ">=4.1.2",
-        "nodemon": "^1.18.10",
-        "tslint": "^5.14.0",
+        "nodemon": "^1.19.1",
+        "tslint": "^5.19.0",
         "tslint-config-airbnb": "^5.11.1",
-        "typescript": "^3.3.4000"
+        "typescript": "^3.5.3"
     },
     "engines": {
         "node": ">=8.0.0"
