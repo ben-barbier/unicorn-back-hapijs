@@ -65,7 +65,7 @@ const getRoutes = db => [{
     handler: (request, h) => {
         const updatedCapacity = request.payload;
         if (updatedCapacity.id !== +request.params.capacityId) {
-            return h.response('Incoherent capacity ID between request param and payload').code(500);
+            return h.response('Incoherent capacity ID between request param and payload').code(400);
         }
         if (!db.capacities.some(c => c.id === updatedCapacity.id)) {
             return h.response(`Capacity '${request.params.capacityId}' not found`).code(404);

@@ -88,7 +88,7 @@ const getRoutes = db => [{
     handler: (request, h) => {
         const updatedUnicorn = request.payload;
         if (updatedUnicorn.id !== +request.params.unicornId) {
-            return h.response('Incoherent unicorn ID between request param and payload').code(500);
+            return h.response('Incoherent unicorn ID between request param and payload').code(400);
         }
         if (!db.unicorns.some(u => u.id === updatedUnicorn.id)) {
             return h.response(`Unicorn '${request.params.unicornId}' not found`).code(404);
