@@ -12,16 +12,23 @@ import * as HapiSwagger from 'hapi-swagger';
 import * as Pack from 'pjson';
 import * as portfinder from 'portfinder';
 import * as socketIo from 'socket.io';
+import * as commander from 'commander';
 import { DB } from './database';
 import { initSockets } from './sockets';
+
+const program = new commander.Command();
+program
+    .option('--host <value>', 'API host address', '0.0.0.0')
+    .option('-p, --port <value>', 'API port')
+    .parse(process.argv);
 
 (async () => {
 
     const apiServerPort = await portfinder.getPortPromise({ port: 3000 });
 
     const apiServer = new hapi.Server({
-        port: process.env.PORT || apiServerPort,
-        host: '0.0.0.0',
+        port: program.port || apiServerPort,
+        host: program.host,
         routes: {
             cors: true,
             // Needed to serve static unicorn photos
@@ -47,8 +54,8 @@ import { initSockets } from './sockets';
     const socketServerPort = await portfinder.getPortPromise({ port: 3100 });
 
     const socketServer = new hapi.Server({
-        host: '0.0.0.0',
-        port: process.env.PORT + 1 || socketServerPort,
+        host: program.host,
+        port: parseInt(program.port) + 100 || socketServerPort,
         routes: { cors: true },
     });
 

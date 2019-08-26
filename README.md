@@ -16,5 +16,5 @@ git clone https://github.com/ben-barbier/unicorn-back
 cd unicorn-back
 npm install 
 npm run build
-npm start 
+npm start -- --host 127.0.0.1
 ```
