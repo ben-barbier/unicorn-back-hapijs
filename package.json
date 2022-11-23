@@ -25,7 +25,7 @@
         "joi": "^14.3.1",
         "pjson": "^1.0.9",
         "portfinder": "^1.0.23",
-        "socket.io": "^2.2.0",
+        "socket.io": "^2.5.0",
         "vision": "^5.4.4"
     },
     "devDependencies": {
